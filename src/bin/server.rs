@@ -1,5 +1,11 @@
 use tokio::net::{TcpListener, TcpStream};
 use mini_redis::{Connection, Frame};
+use bytes::Bytes;
+use std::sync::Arc;
+use dashmap::DashMap;
+// tokio::sync::Mutex
+
+type Db = Arc<DashMap<String, Bytes>>;
 
 #[tokio::main]
 async fn main() {
@@ -7,19 +13,24 @@ async fn main() {
     // 监听指定地址，等待 TCP 连接进来
     let listener = TcpListener::bind("127.0.0.1:6379").await.unwrap();
 
+    println!("Listening");
+
+    let db = Arc::new(DashMap::new());
+
     loop {
-        // 第二个被忽略的项中包含有新连接的 `IP` 和端口信息
         let (socket, _) = listener.accept().await.unwrap();
-        process(socket).await;
+        // 将 handle 克隆一份
+        let db = db.clone();
+
+        println!("Accepted");
+        tokio::spawn(async move {
+            process(socket, db).await;
+        });
     }
 }
 
-async fn process(socket: TcpStream) {
+async fn process(socket: TcpStream, db: Db) {
     use mini_redis::Command::{self, Get, Set};
-    use std::collections::HashMap;
-
-    // 使用 hashmap 来存储 redis 的数据
-    let mut db = HashMap::new();
 
     // `mini-redis` 提供的便利函数，使用返回的 `connection` 可以用于从 socket 中读取数据并解析为数据帧
     let mut connection = Connection::new(socket);
@@ -29,7 +40,7 @@ async fn process(socket: TcpStream) {
         let response = match Command::from_frame(frame).unwrap() {
             Set(cmd) => {
                 // 值被存储为 `Vec<u8>` 的形式
-                db.insert(cmd.key().to_string(), cmd.value().to_vec());
+                db.insert(cmd.key().to_string(), cmd.value().clone());
                 Frame::Simple("OK".to_string())
             }
             Get(cmd) => {

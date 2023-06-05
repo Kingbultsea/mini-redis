@@ -3,12 +3,14 @@ name = "mini-redis"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+# See more keys and their definitions at 
 
-[[example]]
-name = "test-redis"
-path = "examples/test-redis.rs"
+# [[example]]
+# name = "test-redis"
+# path = "examples/test-redis.rs"
 
 [dependencies]
 mini-redis = "0.4.1"
+bytes = "1"
 tokio = { version = "1.27.0", features = ["full"] }
+dashmap = "5.4.0"
