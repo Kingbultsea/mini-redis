@@ -1,5 +1,5 @@
 [package]
-name = "mini-redis"
+name = "my-mini-redis"
 version = "0.1.0"
 edition = "2021"
 

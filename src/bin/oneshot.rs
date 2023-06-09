@@ -1,4 +1,42 @@
-use tokio::sync::oneshot;
+use std::{io, sync::Arc, thread, time::Duration};
+
+use dashmap::DashMap;
+use my_mini_redis::process;
+use tokio::{net::TcpListener, sync::oneshot};
+
+async fn connect_mth() -> io::Result<()> {
+    let (tx, rx) = oneshot::channel::<()>();
+
+    tokio::spawn(async move {
+        thread::sleep(Duration::from_millis(50));
+
+        tx.send(()).unwrap();
+    });
+
+    let listener = TcpListener::bind("localhost:3465").await?;
+
+    tokio::select! {
+        _ = async {
+            loop {
+                let (socket, _) = listener.accept().await?;
+                let db = Arc::new(DashMap::new());
+
+                tokio::spawn(async move { process(socket, db) });
+                println!("CONNECT");
+            }
+
+            // 推断
+            Ok::<_, io::Error>(())
+        } => {}
+        _ = rx => {
+            println!("terminating accept loop");
+        }
+    }
+
+    println!("wait select macro done");
+
+    Ok(())
+}
 
 #[tokio::main]
 async fn main() {
@@ -22,4 +60,6 @@ async fn main() {
             println!("rx2 {:?}", val);
         }
     }
+
+    connect_mth().await;
 }

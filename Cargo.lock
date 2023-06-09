@@ -434,18 +434,6 @@ dependencies = [
 
 [[package]]
 name = "mini-redis"
-version = "0.1.0"
-dependencies = [
- "bytes",
- "crossbeam",
- "dashmap",
- "futures",
- "mini-redis 0.4.1",
- "tokio",
-]
-
-[[package]]
-name = "mini-redis"
 version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "528890a6b63c88c9bda173867128abe62c0f5050dd959f067aeea09e90439f33"
@@ -471,6 +459,18 @@ dependencies = [
  "log",
  "wasi",
  "windows-sys 0.45.0",
+]
+
+[[package]]
+name = "my-mini-redis"
+version = "0.1.0"
+dependencies = [
+ "bytes",
+ "crossbeam",
+ "dashmap",
+ "futures",
+ "mini-redis",
+ "tokio",
 ]
 
 [[package]]

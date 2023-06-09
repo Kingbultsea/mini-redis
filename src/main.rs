@@ -6,7 +6,7 @@ async fn main() {
     // tokio::spawn 生成的任务必须实现 Send 特征，因为当这些任务在 .await 执行过程中发生阻塞时，Tokio 调度器会将任务在线程间移动
     // 一个任务要实现 Send 特征，那它在 .await 调用的过程中所持有的全部数据都必须实现 Send 特征
     let handle = tokio::spawn(async {
-       10086
+       1
     });
 
     let out = handle.await.unwrap();
