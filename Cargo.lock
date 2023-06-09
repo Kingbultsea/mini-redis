@@ -471,6 +471,7 @@ dependencies = [
  "futures",
  "mini-redis",
  "tokio",
+ "tokio-stream",
 ]
 
 [[package]]
