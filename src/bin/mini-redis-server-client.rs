@@ -6,6 +6,8 @@ use std::{str, slice};
 async fn publish() -> mini_redis::Result<()> {
     let mut client = client::connect("127.0.0.1:6379").await?;
 
+    println!("publish start");
+
     // 发布一些数据
     client.publish("numbers", "1".into()).await?;
     client.publish("numbers", "two".into()).await?;
@@ -13,6 +15,9 @@ async fn publish() -> mini_redis::Result<()> {
     client.publish("numbers", "four".into()).await?;
     client.publish("numbers", "five".into()).await?;
     client.publish("numbers", "6".into()).await?;
+
+    println!("publish done");
+
     Ok(())
 }
 
@@ -23,6 +28,8 @@ async fn subscribe() -> mini_redis::Result<()> {
 
     // 防止被意外移动或抛弃，固定内存地址
     tokio::pin!(messages);
+
+    println!("subscribe & listenering");
 
     while let Some(msg) = messages.next().await {
         println!("got = {:?}", msg);

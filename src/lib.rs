@@ -1,14 +1,14 @@
-use tokio::net::TcpStream;
-use mini_redis::{Connection, Frame};
 use bytes::Bytes;
-use std::sync::Arc;
 use dashmap::DashMap;
+use mini_redis::{cmd::Publish, Connection, Frame};
+use std::{sync::Arc, vec};
+use tokio::net::TcpStream;
 // tokio::sync::Mutex
 
 type Db = Arc<DashMap<String, Bytes>>;
 
 pub async fn process(socket: TcpStream, db: Db) {
-    use mini_redis::Command::{self, Get, Set};
+    use mini_redis::Command::{self, Get, Publish, Set, Subscribe};
 
     // `mini-redis` 提供的便利函数，使用返回的 `connection` 可以用于从 socket 中读取数据并解析为数据帧
     let mut connection = Connection::new(socket);
@@ -30,6 +30,13 @@ pub async fn process(socket: TcpStream, db: Db) {
                     Frame::Null
                 }
             }
+            Subscribe(_) => {
+                let c = vec![Frame::Bulk("subscribe".into()), Frame::Bulk("numbers".into())];
+                Frame::Array(c)
+            },
+            Publish(cmd) => {
+                Frame::Integer(12)
+            },
             cmd => panic!("unimplemented {:?}", cmd),
         };
 

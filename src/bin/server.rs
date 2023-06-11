@@ -5,8 +5,6 @@ use dashmap::DashMap;
 
 use my_mini_redis::process;
 
-type Db = Arc<DashMap<String, Bytes>>;
-
 #[tokio::main]
 async fn main() {
     // Bind the listener to the address

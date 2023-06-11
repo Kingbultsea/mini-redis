@@ -28,7 +28,7 @@ async fn main() {
         let (resp_tx, resp_rx) = oneshot::channel();
 
         let cmd = Command::Get {
-            key: "hello".to_string(),
+            key: "numbers".to_string(),
             resp: resp_tx,
         };
 

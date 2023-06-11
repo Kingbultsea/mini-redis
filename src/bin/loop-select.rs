@@ -17,6 +17,8 @@ async fn main() {
 
     let mut done = false;
     let operation = action(None);
+
+    // 需要pin 借用了该类型
     tokio::pin!(operation);
 
     tokio::spawn(async move {
@@ -27,7 +29,7 @@ async fn main() {
 
     loop {
         tokio::select! {
-            res = operation.borrow_mut(), if !done => {
+            res = &mut operation, if !done => {
                 done = true;
 
                 if let Some(v) = res {
